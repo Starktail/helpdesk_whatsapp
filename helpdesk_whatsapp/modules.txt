@@ -1,1 +1,1 @@
-WhatsApp Integration for Frappe Helpdesk
+WhatsApp for Helpdesk
