@@ -242,3 +242,28 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+
+# Fixtures
+# --------------------
+fixtures = [
+	{
+		"dt": "Custom Field",
+		"filters": [
+			[
+				"name",
+				"in",
+				("HD Ticket-custom_whatsapp_mobile_number",),
+			]
+		],
+	},
+	{
+		"dt": "Property Setter",
+		"filters": [
+			[
+				"name",
+				"in",
+				(),
+			]
+		],
+	},
+]
