@@ -2,6 +2,12 @@
 
 WhatsApp Integration for Frappe Helpdesk
 
+### Dependencies
+
+- [Frappe](https://github.com/frappe/frappe)
+- [frappe_whatsapp](https://github.com/shridarpatil/frappe_whatsapp)
+- [Helpdesk](https://github.com/frappe/helpdesk)
+
 ### Installation
 
 You can install this app using the [bench](https://github.com/frappe/bench) CLI:
@@ -9,6 +15,10 @@ You can install this app using the [bench](https://github.com/frappe/bench) CLI:
 ```bash
 cd $PATH_TO_YOUR_BENCH
 bench get-app $URL_OF_THIS_REPO --branch develop
+bench get-app https://github.com/shridarpatil/frappe_whatsapp.git
+bench get-app helpdesk
+bench install-app frappe_whatsapp
+bench install-app helpdesk
 bench install-app helpdesk_whatsapp
 ```
 
