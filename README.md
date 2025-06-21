@@ -21,7 +21,7 @@ bench install-app frappe_whatsapp
 bench install-app helpdesk
 bench install-app helpdesk_whatsapp
 ```
-
+ 
 ### Contributing
 
 This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
