@@ -29,7 +29,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-21 21:15:03.302462",
+ "modified": "2025-06-21 22:41:40.245958",
  "modified_by": "Administrator",
  "module": "WhatsApp for Helpdesk",
  "name": "Helpdesk WhatsApp Settings",
@@ -42,6 +42,16 @@
    "print": 1,
    "read": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "WhatsApp Manager",
    "share": 1,
    "write": 1
   }
