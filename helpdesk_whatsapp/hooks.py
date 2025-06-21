@@ -129,9 +129,7 @@ app_license = "mit"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {"HD Ticket": "helpdesk_whatsapp.overrides.helpdesk.hd_ticket.CustomHDTicket"}
 
 # Document Events
 # ---------------
@@ -140,7 +138,10 @@ app_license = "mit"
 doc_events = {
 	"Communication": {
 		"after_insert": "helpdesk_whatsapp.whatsapp_for_helpdesk.api.create_outgoing_whatsapp_message"
-	}
+	},
+	"WhatsApp Message": {
+		"after_insert": "helpdesk_whatsapp.whatsapp_for_helpdesk.api.create_incoming_communication"
+	},
 }
 
 # Scheduled Tasks

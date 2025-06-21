@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Union
+from typing import Optional
 
 from bs4 import BeautifulSoup, NavigableString
 
@@ -21,7 +21,7 @@ TAG_TO_WHATSAPP = {
 BLOCK_TAGS = ["p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "ul", "ol", "li"]
 
 
-def html_to_whatsapp(html_string: str, selector: str | Optional = None) -> str:
+def html_to_whatsapp(html_string: str, selector: str | None) -> str:
 	"""
 	Converts an HTML string into a WhatsApp-formatted text string.
 
