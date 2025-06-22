@@ -1,3 +1,5 @@
+import traceback
+
 import frappe
 
 from helpdesk_whatsapp.whatsapp_for_helpdesk.html_formatter import html_to_whatsapp
@@ -75,7 +77,10 @@ def create_outgoing_whatsapp_message(doc, method):
 	try:
 		wa_message.insert(ignore_permissions=True)
 	except Exception as e:
-		frappe.log_error(message=str(e), title="Failed to create WhatsApp Message from Communication")
+		frappe.log_error(
+			message="".join(traceback.format_exception(e)),
+			title="Failed to create WhatsApp Message from Communication",
+		)
 		raise e
 
 
@@ -85,6 +90,9 @@ def create_incoming_communication(doc, method):
 	"""
 
 	if doc.doctype != "WhatsApp Message":
+		return
+
+	if doc.type != "Incoming":
 		return
 
 	# Determine if this is a new ticket or a reply to an existing one
