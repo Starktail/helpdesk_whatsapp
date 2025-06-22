@@ -6,7 +6,8 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_mvwi",
-  "chat_to_ticket_timeout"
+  "chat_to_ticket_timeout",
+  "whastapp_template_for_ticket_replies"
  ],
  "fields": [
   {
@@ -23,13 +24,21 @@
    "in_list_view": 1,
    "label": "Timer to convert new chats into tickets",
    "reqd": 1
+  },
+  {
+   "description": "This template will be used to initiate chats with recipients outside the 24 hour reply period",
+   "fieldname": "whastapp_template_for_ticket_replies",
+   "fieldtype": "Link",
+   "label": "WhastApp Template for ticket replies",
+   "options": "WhatsApp Templates",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-21 22:41:40.245958",
+ "modified": "2025-06-22 06:35:47.363151",
  "modified_by": "Administrator",
  "module": "WhatsApp for Helpdesk",
  "name": "Helpdesk WhatsApp Settings",

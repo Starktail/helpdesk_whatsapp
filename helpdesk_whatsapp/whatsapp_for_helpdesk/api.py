@@ -17,14 +17,58 @@ def create_outgoing_whatsapp_message(doc, method):
 	if doc.sent_or_received != "Sent":
 		return
 
-	# Create WhatsApp message
-	wa_message = frappe.new_doc("WhatsApp Message")
-	wa_message.type = "Outgoing"
-	wa_message.to = doc.recipients
-	wa_message.message_type = "Manual"
-	wa_message.message = format_content(doc.content)
-	wa_message.reference_doctype = "Communication"
-	wa_message.reference_name = doc.name
+	if len(doc.recipients) != 11:
+		# We expect the recipient to be a WhatsApp number in the format '27825678901'
+		frappe.log_error(
+			message=f"Invalid WhatsApp number ({doc.recipients}) on Communication {doc.name}",
+			title="WhatsApp Message Creation Error",
+		)
+		return
+
+	# If this outgoing communication is 24 hours after the last WhatsApp message,
+	# we need to use a template message and can not send a free-form message.
+	cut_off_time = frappe.utils.add_to_date(frappe.utils.now(), hours=-24)
+	content = format_content(doc.content)
+	message = (content[:800] + "...") if len(content) > 800 else content  # adhere to WhatsApp character limit
+
+	last_whatsapp_messages = frappe.get_all(
+		"WhatsApp Message",
+		filters={
+			"from": doc.recipients,
+			"type": "Incoming",
+			"creation": [">", cut_off_time],
+			"reference_doctype": "Communication",
+		},
+		order_by="creation desc",
+		limit=1,
+	)
+	if not last_whatsapp_messages:
+		# Create a new WhatsApp Message based on a template
+		settings = frappe.get_cached_doc("Helpdesk WhatsApp Settings")
+		template = settings.whastapp_template_for_ticket_replies
+		wa_message = frappe.new_doc("WhatsApp Message")
+		wa_message.type = "Outgoing"
+		wa_message.to = doc.recipients
+		wa_message.message_type = "Template"
+		wa_message.template = template
+
+		# Set our context variables for the template
+		wa_message.flags.custom_ref_doc = {
+			"ticket_name": doc.reference_name,
+			"reply_content": message,
+		}
+		wa_message.reference_doctype = "Communication"
+		wa_message.reference_name = doc.name
+
+	else:
+		# Create free-form WhatsApp message
+		wa_message = frappe.new_doc("WhatsApp Message")
+		wa_message.type = "Outgoing"
+		wa_message.to = doc.recipients
+		wa_message.message_type = "Manual"
+		wa_message.message = format_content(doc.content)
+		wa_message.reference_doctype = "Communication"
+		wa_message.reference_name = doc.name
 
 	# Set status to queued
 	wa_message.status = "Queued"
