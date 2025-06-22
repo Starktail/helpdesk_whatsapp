@@ -83,7 +83,7 @@ app_license = "mit"
 # ------------
 
 # before_install = "helpdesk_whatsapp.install.before_install"
-# after_install = "helpdesk_whatsapp.install.after_install"
+after_install = "helpdesk_whatsapp.whatsapp_for_helpdesk.utils.after_install"
 
 # Uninstallation
 # ------------
