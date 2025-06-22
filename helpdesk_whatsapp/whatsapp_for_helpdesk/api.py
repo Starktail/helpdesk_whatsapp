@@ -143,7 +143,7 @@ def create_incoming_communication(doc, method):
 				"contact": get_contact_from_whatsapp_number(doc.get("from")),
 			}
 		)
-		ticket.insert()
+		ticket.insert(ignore_permissions=True)
 		ticket_name = ticket.name
 
 	communication = frappe.get_doc(
