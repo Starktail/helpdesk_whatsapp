@@ -19,6 +19,9 @@ def create_outgoing_whatsapp_message(doc, method):
 	if doc.sent_or_received != "Sent":
 		return
 
+	if doc.custom_whatsapp_message_sent:
+		return
+
 	if len(doc.recipients) != 11:
 		# We expect the recipient to be a WhatsApp number in the format '27825678901'
 		frappe.log_error(
@@ -76,6 +79,7 @@ def create_outgoing_whatsapp_message(doc, method):
 	wa_message.status = "Queued"
 	try:
 		wa_message.insert(ignore_permissions=True)
+		frappe.enqueue(mark_communication_as_sent, doc=doc)
 	except Exception as e:
 		frappe.log_error(
 			message="".join(traceback.format_exception(e)),
@@ -211,3 +215,12 @@ def get_contact_from_whatsapp_number(number: str):
 		return contact_phone_nos[0].parent
 
 	return None
+
+
+def mark_communication_as_sent(doc):
+	"""
+	Mark the Communication document as sent.
+	"""
+	frappe.db.set_value(
+		"Communication", doc.name, "custom_whatsapp_message_sent", True, update_modified=False
+	)

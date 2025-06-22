@@ -251,18 +251,8 @@ fixtures = [
 			[
 				"name",
 				"in",
-				("HD Ticket-custom_whatsapp_mobile_number",),
+				("HD Ticket-custom_whatsapp_mobile_number", "Communication-custom_whatsapp_message_sent"),
 			]
 		],
-	},
-	{
-		"dt": "Property Setter",
-		"filters": [
-			[
-				"name",
-				"in",
-				(),
-			]
-		],
-	},
+	}
 ]
