@@ -25,3 +25,13 @@ class CustomHDTicket(HDTicket):
 
 		# Call the original method for other cases
 		super().create_communication_via_contact(message=message, attachments=message, new_ticket=message)
+
+	def skip_email_workflow(self):
+		"""
+		Override the skip_email_workflow method to prevent sending emails for WhatsApp-created tickets.
+		"""
+		if self.custom_whatsapp_mobile_number:
+			return True
+
+		# Call the original method for other cases
+		return super().skip_email_workflow()

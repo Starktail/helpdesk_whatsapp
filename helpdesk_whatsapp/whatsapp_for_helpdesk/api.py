@@ -11,7 +11,7 @@ def create_outgoing_whatsapp_message(doc, method):
 	if doc.doctype != "Communication":
 		return
 
-	if doc.communication_medium != "Other":
+	if doc.communication_medium != "":
 		return
 
 	if doc.sent_or_received != "Sent":
@@ -76,6 +76,7 @@ def create_outgoing_whatsapp_message(doc, method):
 		wa_message.insert(ignore_permissions=True)
 	except Exception as e:
 		frappe.log_error(message=str(e), title="Failed to create WhatsApp Message from Communication")
+		raise e
 
 
 def create_incoming_communication(doc, method):
@@ -131,7 +132,7 @@ def create_incoming_communication(doc, method):
 
 	communication = frappe.get_doc(
 		{
-			"communication_medium": "Other",
+			"communication_medium": "",
 			"communication_type": "Communication",
 			"content": doc.message,
 			"doctype": "Communication",
