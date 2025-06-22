@@ -128,6 +128,10 @@ def create_incoming_communication(doc, method):
 		)
 		ticket_name = last_communication.reference_name if last_communication else None
 
+		# Validate if the ticket is merged to find the correct ticket
+		if ticket_name:
+			ticket_name = check_for_merges_and_get_latest_ticket(ticket_name)
+
 	else:
 		# Else, we create a new ticket
 		ticket = frappe.get_doc(
@@ -224,3 +228,17 @@ def mark_communication_as_sent(doc):
 	frappe.db.set_value(
 		"Communication", doc.name, "custom_whatsapp_message_sent", True, update_modified=False
 	)
+
+
+def check_for_merges_and_get_latest_ticket(ticket_name: str) -> str:
+	"""
+	Recursively check for merged tickets and return the latest ticket name.
+	"""
+	found_latest = False
+	while not found_latest:
+		ticket = frappe.get_doc("HD Ticket", ticket_name)
+		if ticket.is_merged:
+			ticket_name = ticket.merged_with
+		else:
+			found_latest = True
+	return ticket_name
