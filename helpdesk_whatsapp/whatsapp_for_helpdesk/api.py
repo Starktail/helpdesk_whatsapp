@@ -123,6 +123,7 @@ def create_incoming_communication(doc, method):
 				"subject": subject,
 				"description": doc.message,
 				"custom_whatsapp_mobile_number": doc.get("from"),
+				"contact": get_contact_from_whatsapp_number(doc.get("from")),
 			}
 		)
 		ticket.insert()
@@ -178,3 +179,26 @@ def link_communication_to_whatsapp_message(whatsapp_message_name: str, communica
 			message=f"Failed to link WhatsApp Message {whatsapp_message_name} to Communication {communication_name}",
 			title="Linking Error",
 		)
+
+
+def get_contact_from_whatsapp_number(number: str):
+	"""
+	Get the contact from a WhatsApp number.
+	"""
+	number = number.strip()
+	if not number.startswith("+"):
+		number = f"+{number}"
+
+	contact_phone_nos = frappe.get_all(
+		"Contact Phone",
+		filters={
+			"parenttype": "Contact",
+			"phone": number,
+		},
+		fields=["parent"],
+	)
+
+	if contact_phone_nos:
+		return contact_phone_nos[0].parent
+
+	return None
