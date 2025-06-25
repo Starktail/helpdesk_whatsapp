@@ -180,7 +180,9 @@ def format_content(html: str) -> str:
 	return html_to_whatsapp(html, selector=".ql-editor")
 
 
-def link_communication_to_whatsapp_message(whatsapp_message_name: str, communication_name: str):
+def link_communication_to_whatsapp_message(
+	whatsapp_message_name: str, communication_name: str, retries: int = 0
+):
 	"""
 	Link a WhatsApp Message to a Communication document.
 	"""
@@ -191,10 +193,21 @@ def link_communication_to_whatsapp_message(whatsapp_message_name: str, communica
 		whatsapp_message.reference_name = communication_name
 		whatsapp_message.save(ignore_permissions=True)
 	else:
-		frappe.log_error(
-			message=f"Failed to link WhatsApp Message {whatsapp_message_name} to Communication {communication_name}",
-			title="Linking Error",
-		)
+		if retries < 5:
+			# Retry linking after a short delay
+			frappe.enqueue(
+				link_communication_to_whatsapp_message,
+				whatsapp_message_name=whatsapp_message_name,
+				communication_name=communication_name,
+				retries=retries + 1,
+				queue="long",
+			)
+			return
+		else:
+			frappe.log_error(
+				message=f"Failed to link WhatsApp Message {whatsapp_message_name} to Communication {communication_name} after {retries} retries.",
+				title="Linking Error",
+			)
 
 
 def get_contact_from_whatsapp_number(number: str):
