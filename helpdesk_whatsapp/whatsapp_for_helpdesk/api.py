@@ -42,7 +42,6 @@ def create_outgoing_whatsapp_message(doc, method):
 			"from": doc.recipients,
 			"type": "Incoming",
 			"creation": [">", cut_off_time],
-			"reference_doctype": "Communication",
 		},
 		order_by="creation desc",
 		limit=1,
