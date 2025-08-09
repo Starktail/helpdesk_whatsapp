@@ -1,6 +1,7 @@
 import traceback
 
 import frappe
+from bs4 import BeautifulSoup
 
 from helpdesk_whatsapp.whatsapp_for_helpdesk.html_formatter import html_to_whatsapp
 
@@ -74,6 +75,18 @@ def create_outgoing_whatsapp_message(doc, method):
 		wa_message.reference_doctype = "Communication"
 		wa_message.reference_name = doc.name
 
+		# Handle attachments
+		soup = BeautifulSoup(doc.content, "html.parser")
+		img_tag = soup.find("img")
+		video_tag = soup.find("video")
+
+		if img_tag and img_tag.get("src"):
+			wa_message.content_type = "image"
+			wa_message.attach = img_tag.get("src")
+		elif video_tag and video_tag.get("src"):
+			wa_message.content_type = "video"
+			wa_message.attach = video_tag.get("src")
+
 	# Set status to queued
 	wa_message.status = "Queued"
 	try:
@@ -145,11 +158,30 @@ def create_incoming_communication(doc, method):
 		ticket.insert(ignore_permissions=True)
 		ticket_name = ticket.name
 
+	message = doc.message
+
+	# If the WhatsApp message has an attachment, embed this in the the communication content
+	if doc.attach:
+		if doc.content_type == "image":
+			message += f'<br><img src="{doc.attach}"></img><br><a href="{doc.attach}" target="_blank"> Download image </a>'
+		elif doc.content_type == "audio":
+			message += f'<audio controls src="{doc.attach}"></audio><br><a href="{doc.attach}" target="_blank"> Download audio </a>'
+		elif doc.content_type == "video":
+			message += f"""
+				<video controls width="250">
+				<source src="{doc.attach}" />
+				<br>
+				<a href="{doc.attach}" target="_blank"> Download video </a>
+				</video>
+			"""
+		else:
+			message += f'<a href="{doc.attach}" target="_blank"> Link to file </a>'
+
 	communication = frappe.get_doc(
 		{
 			"communication_medium": "",
 			"communication_type": "Communication",
-			"content": doc.message,
+			"content": message,
 			"doctype": "Communication",
 			"email_account": None,
 			"recipients": doc.get("from"),
