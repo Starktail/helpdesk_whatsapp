@@ -1,3 +1,4 @@
+import time
 import traceback
 
 import frappe
@@ -100,10 +101,16 @@ def create_outgoing_whatsapp_message(doc, method):
 		raise e
 
 
-def create_incoming_communication(doc, method):
+def enqueue_create_incoming_communication(doc, method):
 	"""
 	Intended to be called from a hook on a WhatsApp Message
 	"""
+	frappe.enqueue(method=create_incoming_communication, enqueue_after_commit=True, doc=doc)
+
+
+def create_incoming_communication(doc):
+	# Wait for a few seconds, just in case an attachment is added after insert of Whatsapp Message
+	time.sleep(5)
 
 	if doc.doctype != "WhatsApp Message":
 		return
