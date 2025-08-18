@@ -187,7 +187,7 @@ def create_incoming_communication(doc):
 	communication = frappe.get_doc(
 		{
 			"communication_medium": "",
-			"communication_type": "Communication",
+			"communication_type": "Automated Message",
 			"content": message,
 			"doctype": "Communication",
 			"email_account": None,
