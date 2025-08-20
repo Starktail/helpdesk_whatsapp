@@ -8,6 +8,25 @@ WhatsApp Integration for Frappe Helpdesk
 - [frappe_whatsapp](https://github.com/shridarpatil/frappe_whatsapp)
 - [Helpdesk](https://github.com/frappe/helpdesk)
 
+
+### Screenshots
+
+#### Helpdesk WhatsApp Settings
+
+![alt text](docs/images/settings.png)
+
+#### Helpdesk Ticket view
+
+![alt text](docs/images/hd-ticket.png)
+
+### Caveats
+
+This app does not modify anything in the `helpdesk` Vue source (or dist) files, which means there are some limitations:
+- On the Agent's ticket view, the **Source** field incorrectly shows as **Mail**
+- At this time, the only way to Reply using WhatsApp is to use the **Reply** icon on a customer's message. Using the `✉️ Reply` button at the bottom of the page will not work, because it populates the "To" field with *Guest*
+
+Ideally these would be solved by raising PR's against frappe/helpdesk that supports "external" communication channels
+
 ### Installation
 
 You can install this app using the [bench](https://github.com/frappe/bench) CLI:
