@@ -49,4 +49,6 @@ CI=Yes bench build --app frappe &
 bench --site test_site reinstall --yes
 
 bench --verbose --site test_site install-app erpnext
+bench --verbose --site test_site install-app helpdesk
+bench --verbose --site test_site install-app https://github.com/shridarpatil/frappe_whatsapp.git
 bench --verbose --site test_site install-app helpdesk_whatsapp
