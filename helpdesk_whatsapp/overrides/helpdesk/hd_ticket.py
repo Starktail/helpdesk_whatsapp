@@ -15,6 +15,7 @@ class CustomHDTicket(HDTicket):
 		# Call the original method for other cases
 		super().send_acknowledgement_email()
 
+	@frappe.whitelist()
 	def create_communication_via_contact(self, message, attachments=None, new_ticket=False):
 		"""
 		Override the create_communication_via_contact method to prevent sending emails
