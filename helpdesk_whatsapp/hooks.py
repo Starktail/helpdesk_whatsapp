@@ -140,7 +140,8 @@ doc_events = {
 		"after_insert": "helpdesk_whatsapp.whatsapp_for_helpdesk.api.create_outgoing_whatsapp_message"
 	},
 	"WhatsApp Message": {
-		"after_insert": "helpdesk_whatsapp.whatsapp_for_helpdesk.api.enqueue_create_incoming_communication"
+		"after_insert": "helpdesk_whatsapp.whatsapp_for_helpdesk.api.enqueue_create_incoming_communication",
+		"on_update": "helpdesk_whatsapp.whatsapp_for_helpdesk.api.update_communication",
 	},
 }
 
