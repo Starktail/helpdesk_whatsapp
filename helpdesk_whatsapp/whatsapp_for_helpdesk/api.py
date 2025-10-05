@@ -138,6 +138,20 @@ def create_incoming_communication(doc):
 		order_by="creation desc",
 		limit=1,
 	)
+	if not last_whatsapp_messages:
+		last_outgoing_whatsapp_messages = frappe.get_all(
+			"WhatsApp Message",
+			filters={
+				"to": doc.get("from"),
+				"type": "Outgoing",
+				"creation": [">", cut_off_time],
+				"reference_doctype": "Communication",
+			},
+			fields=["name", "reference_name"],
+			order_by="creation desc",
+			limit=1,
+		)
+		last_whatsapp_messages += last_outgoing_whatsapp_messages
 	if last_whatsapp_messages:
 		last_whatsapp_message = last_whatsapp_messages[0]
 		last_communication = (
