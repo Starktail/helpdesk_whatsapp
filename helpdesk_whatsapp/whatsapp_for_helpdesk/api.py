@@ -3,6 +3,7 @@ import traceback
 
 import frappe
 from bs4 import BeautifulSoup
+from helpdesk.utils import publish_event
 
 from helpdesk_whatsapp.whatsapp_for_helpdesk.html_formatter import html_to_whatsapp
 
@@ -30,6 +31,9 @@ def create_outgoing_whatsapp_message(doc, method):
 			message=f"Invalid WhatsApp number ({doc.recipients}) on Communication {doc.name}",
 			title="WhatsApp Message Creation Error",
 		)
+		frappe.db.set_value("Communication", doc.name, "delivery_status", "Error", update_modified=False)
+		if doc.reference_doctype == "HD Ticket":
+			publish_event("helpdesk:ticket-update", doc.reference_name)
 		return
 
 	# If this outgoing communication is 24 hours after the last WhatsApp message,
@@ -98,6 +102,9 @@ def create_outgoing_whatsapp_message(doc, method):
 			message="".join(traceback.format_exception(e)),
 			title="Failed to create WhatsApp Message from Communication",
 		)
+		frappe.db.set_value("Communication", doc.name, "delivery_status", "Error", update_modified=False)
+		if doc.reference_doctype == "HD Ticket":
+			publish_event("helpdesk:ticket-update", doc.reference_name)
 		raise e
 
 
@@ -138,6 +145,20 @@ def create_incoming_communication(doc):
 		order_by="creation desc",
 		limit=1,
 	)
+	if not last_whatsapp_messages:
+		last_outgoing_whatsapp_messages = frappe.get_all(
+			"WhatsApp Message",
+			filters={
+				"to": doc.get("from"),
+				"type": "Outgoing",
+				"creation": [">", cut_off_time],
+				"reference_doctype": "Communication",
+			},
+			fields=["name", "reference_name"],
+			order_by="creation desc",
+			limit=1,
+		)
+		last_whatsapp_messages += last_outgoing_whatsapp_messages
 	if last_whatsapp_messages:
 		last_whatsapp_message = last_whatsapp_messages[0]
 		last_communication = (
@@ -211,6 +232,36 @@ def create_incoming_communication(doc):
 	)
 
 
+def update_communication(doc, method):
+	"""
+	Intended to be called from an on_update hook on WhatsApp Message
+	"""
+	if doc.doctype != "WhatsApp Message":
+		return
+
+	if doc.type != "Outgoing":
+		return
+
+	try:
+		if doc._doc_before_save:
+			if doc._doc_before_save.status != doc.status and doc.status in ["delivered", "read"]:
+				if doc.reference_doctype == "Communication":
+					communication = frappe.get_doc("Communication", doc.reference_name)
+					if doc.status == "read":
+						frappe.db.set_value("Communication", doc.reference_name, "delivery_status", "Sent")
+						if communication.reference_doctype == "HD Ticket":
+							publish_event("helpdesk:ticket-update", communication.reference_name)
+					if doc.status == "delivered":
+						frappe.db.set_value("Communication", doc.reference_name, "delivery_status", "Read")
+						if communication.reference_doctype == "HD Ticket":
+							publish_event("helpdesk:ticket-update", communication.reference_name)
+	except Exception as e:
+		frappe.log_error(
+			message="".join(traceback.format_exception(e)),
+			title="Failed to update Communication from WhatsApp Message status change",
+		)
+
+
 def format_content(html: str) -> str:
 	"""
 	Format the content for WhatsApp.
@@ -279,6 +330,9 @@ def mark_communication_as_sent(doc):
 	frappe.db.set_value(
 		"Communication", doc.name, "custom_whatsapp_message_sent", True, update_modified=False
 	)
+	frappe.db.set_value("Communication", doc.name, "delivery_status", "Sending", update_modified=False)
+	if doc.reference_doctype == "HD Ticket":
+		publish_event("helpdesk:ticket-update", doc.reference_name)
 
 
 def check_for_merges_and_get_latest_ticket(ticket_name: str) -> str:

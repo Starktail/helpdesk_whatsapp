@@ -21,8 +21,8 @@ class CustomHDTicket(HDTicket):
 		Override the create_communication_via_contact method to prevent sending emails
 		when a ticket is created via WhatsApp.
 		"""
-		# Do not send email for WhatsApp-created tickets
-		if self.custom_whatsapp_mobile_number:
+		# Do not add a communication record for WhatsApp-created tickets
+		if new_ticket:
 			return
 
 		# Call the original method for other cases
