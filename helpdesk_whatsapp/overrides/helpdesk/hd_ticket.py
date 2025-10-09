@@ -18,11 +18,11 @@ class CustomHDTicket(HDTicket):
 	@frappe.whitelist()
 	def create_communication_via_contact(self, message, attachments=None, new_ticket=False):
 		"""
-		Override the create_communication_via_contact method to prevent sending emails
-		when a ticket is created via WhatsApp.
+		Override the create_communication_via_contact method to prevent creating double communication
+		records when a ticket is created via WhatsApp.
 		"""
 		# Do not add a communication record for WhatsApp-created tickets
-		if new_ticket:
+		if new_ticket and self.custom_whatsapp_mobile_number:
 			return
 
 		# Call the original method for other cases
