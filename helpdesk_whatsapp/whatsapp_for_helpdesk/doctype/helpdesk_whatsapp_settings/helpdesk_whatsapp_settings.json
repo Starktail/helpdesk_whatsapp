@@ -7,12 +7,15 @@
  "field_order": [
   "section_break_mvwi",
   "chat_to_ticket_timeout",
-  "whastapp_template_for_ticket_replies"
+  "whastapp_template_for_ticket_replies",
+  "email_overrides_section",
+  "default_sender_email_account"
  ],
  "fields": [
   {
    "fieldname": "section_break_mvwi",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "WhatsApp Settings"
   },
   {
    "default": "600",
@@ -32,13 +35,26 @@
    "label": "WhastApp Template for ticket replies",
    "options": "WhatsApp Templates",
    "reqd": 1
+  },
+  {
+   "fieldname": "email_overrides_section",
+   "fieldtype": "Section Break",
+   "label": "Email Overrides"
+  },
+  {
+   "description": "Always use this email account for sending Emails from Helpdesk",
+   "fieldname": "default_sender_email_account",
+   "fieldtype": "Link",
+   "label": "Default Sender Email Account",
+   "link_filters": "[[\"Email Account\",\"enable_outgoing\",\"=\",1]]",
+   "options": "Email Account"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-22 06:35:47.363151",
+ "modified": "2025-10-09 13:48:14.016159",
  "modified_by": "Administrator",
  "module": "WhatsApp for Helpdesk",
  "name": "Helpdesk WhatsApp Settings",
