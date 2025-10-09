@@ -69,3 +69,15 @@ class CustomHDTicket(HDTicket):
 		# =====================================================================================
 		self.save(ignore_permissions=True)
 		# =====================================================================================
+
+	def sender_email(self):
+		"""
+		Overrides default sender_email method.
+		Based on Setting, use custom default outgoing email account
+		"""
+		settings = frappe.get_cached_doc("Helpdesk WhatsApp Settings")
+		if settings.default_sender_email_account:
+			return frappe.get_doc("Email Account", settings.default_sender_email_account)
+		else:
+			# Default to Helpdesk's implementation
+			return super().sender_email()
