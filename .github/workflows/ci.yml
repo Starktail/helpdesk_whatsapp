@@ -13,6 +13,7 @@ concurrency:
 
 env:
   TEST_AGAINST_FRAPPE_VERSION: v15.96.0
+  TEST_AGAINST_ERPNEXT_VERSION: v15.94.3
 
 
 jobs:
