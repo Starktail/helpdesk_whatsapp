@@ -3,5 +3,15 @@
 *.egg-info
 *.swp
 tags
-node_modules
-__pycache__
+helpdesk_whatsapp/docs/current
+node_modules/
+cypress/videos
+cypress/screenshots
+helpdesk_whatsapp/public/node_modules
+
+# Package management is managed by bench
+yarn.lock
+
+# Docs
+docs/.vitepress/dist
+docs/.vitepress/cache

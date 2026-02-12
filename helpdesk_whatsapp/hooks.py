@@ -169,7 +169,7 @@ doc_events = {
 # Testing
 # -------
 
-# before_tests = "helpdesk_whatsapp.install.before_tests"
+before_tests = "helpdesk_whatsapp.utils.before_tests"
 
 # Overriding Methods
 # ------------------------------
@@ -256,4 +256,14 @@ fixtures = [
 			]
 		],
 	}
+]
+
+
+standard_help_items = [
+	{
+		"item_label": "WhatsApp Integration for Frappe Helpdesk Documentation",
+		"item_type": "Route",
+		"route": "/helpdesk_whatsapp_introduction",
+		"is_standard": 1,
+	},
 ]
