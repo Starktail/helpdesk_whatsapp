@@ -16,7 +16,9 @@ class CustomHDTicket(HDTicket):
 		super().send_acknowledgement_email()
 
 	@frappe.whitelist()
-	def create_communication_via_contact(self, message, attachments=None, new_ticket=False):
+	def create_communication_via_contact(
+		self, message: str, attachments: list | None = None, new_ticket: bool = False
+	):
 		"""
 		Override the create_communication_via_contact method to prevent creating double communication
 		records when a ticket is created via WhatsApp.

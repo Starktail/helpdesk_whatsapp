@@ -18,4 +18,4 @@ def after_install():
 			{"fieldname": "custom_whatsapp_mobile_number"},
 		)
 		template.save()
-		frappe.db.commit()
+		frappe.db.commit()  # nosemgrep: frappe-manual-commit
