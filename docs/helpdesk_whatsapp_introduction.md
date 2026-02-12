@@ -8,11 +8,11 @@ This is a [Frappe](https://frappeframework.com/) custom app, intended to add Wha
 
 ### Helpdesk WhatsApp Settings
 
-![alt text](docs/images/settings.png)
+![alt text](images/settings.png)
 
 ### Helpdesk Ticket view
 
-![alt text](docs/images/hd-ticket.png)
+![alt text](images/hd-ticket.png)
 
 ### Caveats
 
