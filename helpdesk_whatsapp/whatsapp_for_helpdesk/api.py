@@ -25,8 +25,10 @@ def create_outgoing_whatsapp_message(doc, method):
 	if doc.custom_whatsapp_message_sent:
 		return
 
-	if len(doc.recipients) != 11:
-		# We expect the recipient to be a WhatsApp number in the format '27825678901'
+	# We expect the recipient to be a WhatsApp number in E.164 form without the
+	# leading '+', e.g. '27825678901'.
+	recipient = (doc.recipients or "").strip()
+	if not recipient.isdigit() or not (8 <= len(recipient) <= 15):
 		frappe.log_error(
 			message=f"Invalid WhatsApp number ({doc.recipients}) on Communication {doc.name}",
 			title="WhatsApp Message Creation Error",
