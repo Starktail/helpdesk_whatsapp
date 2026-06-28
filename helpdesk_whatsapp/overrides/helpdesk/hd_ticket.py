@@ -3,6 +3,38 @@ from helpdesk.helpdesk.doctype.hd_ticket.hd_ticket import HDTicket
 
 
 class CustomHDTicket(HDTicket):
+	@staticmethod
+	def _format_whatsapp_number(number: str) -> str:
+		"""Normalise to the bare international format the WhatsApp hook expects.
+		"""
+		return "".join(ch for ch in (number or "") if ch.isdigit())
+
+	@frappe.whitelist()
+	def reply_via_agent(
+		self,
+		message: str,
+		from_email: dict | None = None,
+		to: str | None = None,
+		cc: str | None = None,
+		bcc: str | None = None,
+		attachments: list[str] | None = None,
+	):
+		"""Route agent replies on WhatsApp tickets to the customer's WhatsApp number
+		"""
+		if self.custom_whatsapp_mobile_number:
+			to = self._format_whatsapp_number(self.custom_whatsapp_mobile_number)
+			cc = None
+			bcc = None
+
+		return super().reply_via_agent(
+			message=message,
+			from_email=from_email,
+			to=to,
+			cc=cc,
+			bcc=bcc,
+			attachments=attachments or [],
+		)
+
 	def send_acknowledgement_email(self):
 		"""
 		Override the send_acknowledgement_email method to prevent sending emails
