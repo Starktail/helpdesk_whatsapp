@@ -1,6 +1,6 @@
 {
   "name": "helpdesk_whatsapp",
-  "version": "0.6.2",
+  "version": "1.0.1",
   "author": "Starktail (Pty) Ltd <support@starktail.com>",
   "main": "index.js",
   "devDependencies": {
