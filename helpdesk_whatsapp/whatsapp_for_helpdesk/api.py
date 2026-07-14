@@ -240,9 +240,21 @@ def create_incoming_communication(doc):
 	)
 
 
+# Map WhatsApp Message delivery states to the Communication.delivery_status values
+WHATSAPP_TO_DELIVERY_STATUS = {
+	"sent": "Sent",
+	"delivered": "Sent",
+	"read": "Read",
+	"failed": "Error",
+}
+
+
 def update_communication(doc, method):
 	"""
-	Intended to be called from an on_update hook on WhatsApp Message
+	Intended to be called from an on_update hook on WhatsApp Message.
+
+	Mirror the WhatsApp Message delivery state onto the linked Communication so the
+	ticket UI reflects sent/read/failed instead of being stuck on "Sending".
 	"""
 	if doc.doctype != "WhatsApp Message":
 		return
@@ -250,19 +262,24 @@ def update_communication(doc, method):
 	if doc.type != "Outgoing":
 		return
 
+	if doc.reference_doctype != "Communication":
+		return
+
+	# Only react to an actual status change (on insert there is no _doc_before_save).
+	if doc._doc_before_save and doc._doc_before_save.status == doc.status:
+		return
+
+	delivery_status = WHATSAPP_TO_DELIVERY_STATUS.get((doc.status or "").lower())
+	if not delivery_status:
+		return
+
 	try:
-		if doc._doc_before_save:
-			if doc._doc_before_save.status != doc.status and doc.status in ["delivered", "read"]:
-				if doc.reference_doctype == "Communication":
-					communication = frappe.get_doc("Communication", doc.reference_name)
-					if doc.status == "read":
-						frappe.db.set_value("Communication", doc.reference_name, "delivery_status", "Sent")
-						if communication.reference_doctype == "HD Ticket":
-							publish_event("helpdesk:ticket-update", communication.reference_name)
-					if doc.status == "delivered":
-						frappe.db.set_value("Communication", doc.reference_name, "delivery_status", "Read")
-						if communication.reference_doctype == "HD Ticket":
-							publish_event("helpdesk:ticket-update", communication.reference_name)
+		frappe.db.set_value(
+			"Communication", doc.reference_name, "delivery_status", delivery_status, update_modified=False
+		)
+		communication = frappe.get_doc("Communication", doc.reference_name)
+		if communication.reference_doctype == "HD Ticket":
+			publish_event("helpdesk:ticket-update", communication.reference_name)
 	except Exception as e:
 		frappe.log_error(
 			message="".join(traceback.format_exception(e)),
