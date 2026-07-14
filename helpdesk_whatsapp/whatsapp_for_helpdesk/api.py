@@ -132,7 +132,13 @@ def create_incoming_communication(doc):
 	# For now, get the timer setting and check if this message is within the timeout period
 	settings = frappe.get_cached_doc("Helpdesk WhatsApp Settings")
 	cut_off_time = frappe.utils.add_to_date(frappe.utils.now(), seconds=-int(settings.chat_to_ticket_timeout))
-	subject = (doc.message[:20] + "...") if len(doc.message) > 20 else doc.message
+	# Derive a subject , handle media-only messages
+	message_text = (doc.message or "").strip()
+	if message_text:
+		subject = (message_text[:20] + "...") if len(message_text) > 20 else message_text
+	else:
+		sender = doc.get("profile_name") or doc.get("from") or "Unknown"
+		subject = f"WhatsApp {doc.content_type or 'message'} from {sender}"
 
 	last_whatsapp_messages = frappe.get_all(
 		"WhatsApp Message",
@@ -180,7 +186,7 @@ def create_incoming_communication(doc):
 			{
 				"doctype": "HD Ticket",
 				"subject": subject,
-				"description": doc.message,
+				"description": message_text or subject,
 				"custom_whatsapp_mobile_number": doc.get("from"),
 				"contact": get_contact_from_whatsapp_number(doc.get("from")),
 			}
