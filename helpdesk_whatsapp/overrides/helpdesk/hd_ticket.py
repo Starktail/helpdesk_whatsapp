@@ -5,8 +5,7 @@ from helpdesk.helpdesk.doctype.hd_ticket.hd_ticket import HDTicket
 class CustomHDTicket(HDTicket):
 	@staticmethod
 	def _format_whatsapp_number(number: str) -> str:
-		"""Normalise to the bare international format the WhatsApp hook expects.
-		"""
+		"""Normalise to the bare international format the WhatsApp hook expects."""
 		return "".join(ch for ch in (number or "") if ch.isdigit())
 
 	@frappe.whitelist()
@@ -19,8 +18,7 @@ class CustomHDTicket(HDTicket):
 		bcc: str | None = None,
 		attachments: list[str] | None = None,
 	):
-		"""Route agent replies on WhatsApp tickets to the customer's WhatsApp number
-		"""
+		"""Route agent replies on WhatsApp tickets to the customer's WhatsApp number"""
 		if self.custom_whatsapp_mobile_number:
 			to = self._format_whatsapp_number(self.custom_whatsapp_mobile_number)
 			cc = None
