@@ -59,7 +59,7 @@ class CustomHDTicket(HDTicket):
 
 		# Call the original method for other cases
 		super().create_communication_via_contact(
-			message=message, attachments=attachments, new_ticket=new_ticket
+			message=message, attachments=attachments or [], new_ticket=new_ticket
 		)
 
 	def skip_email_workflow(self):
